@@ -43,7 +43,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 4890085278179872738, guid: ab7739565401b498bb1d9e22fade7d5e,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,6 +119,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 23800000, guid: 9e50ed4b3f9a84ecb8d94b140d1b0e9e, type: 2}
@@ -151,7 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de3e3604a27d64b74a4138c47426949f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ConnectAddress: 127.0.0.1
+  ConnectAddress: 3.125.253.110
   Port: 7777
   Channels: []
   TransportBufferSize: 8192
@@ -253,7 +256,7 @@ MonoBehaviour:
     EnableTimeResync: 0
     TimeResyncInterval: 30
     EnableNetworkedVar: 1
-    EnsureNetworkedVarLengthSafety: 0
+    EnsureNetworkedVarLengthSafety: 1
     EnableSceneManagement: 1
     ForceSamePrefabs: 1
     UsePrefabSync: 0
@@ -562,6 +565,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -586,6 +590,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1387861438
 MeshFilter:
   m_ObjectHideFlags: 0

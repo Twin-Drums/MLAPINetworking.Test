@@ -9,14 +9,15 @@ public class Initialization : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 20;
+
         if(isServer)
         {            
             NetworkingManager.Singleton.StartServer();
         }
         else
         {
-#if UNITY_EDITOR
-            NetworkingManager.Singleton.StartHost();
+#if UNITY_EDITOR            
 #else
             NetworkingManager.Singleton.StartClient();
 #endif
