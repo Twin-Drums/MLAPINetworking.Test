@@ -50,23 +50,29 @@ namespace Twindrums.TheWagaduChronicles.Visibility
         }
 
         private float cellSize;
-        private Dictionary<ulong, Cell> grid = new Dictionary<ulong, Cell>();
+        private readonly Dictionary<ulong, Cell> grid = new Dictionary<ulong, Cell>();
+        private readonly List<IVisibilityGridObject> objects = new List<IVisibilityGridObject>();
 
         public VisibilityGrid(float cellSize, ushort initialAmountOfCellLists = 10)
         {
             this.cellSize = cellSize;
         }
 
-        public ulong RegisterObject(IVisibilityGridObject gridObject)
+        public void RegisterObject(IVisibilityGridObject gridObject)
         {
-            var pos = gridObject.Position;
-            ulong cellId = GetCellId(pos.x, pos.y);            
-            AddToCell(cellId, gridObject);
-            return cellId;
+            if (objects.Contains(gridObject))
+                return;
+
+            objects.Add(gridObject);            
+            AddToCell(GetCellId(gridObject.Position.x, gridObject.Position.y), gridObject);
+            return;
         }
 
         public void UnregisterObject(IVisibilityGridObject gridObject)
         {
+            if (objects.Contains(gridObject))
+                objects.Remove(gridObject);
+
             if (gridObject.Cell == null)
                 return;
             RemoveFromCell(gridObject);
