@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-
 namespace Twindrums.TheWagaduChronicles.Client.Avatar
 {
     public class AvatarCameraConnector : MonoBehaviour
@@ -10,7 +9,7 @@ namespace Twindrums.TheWagaduChronicles.Client.Avatar
         {
             var camera = Camera.main.GetComponent<AvatarCamera>();
 
-            if (camera == null)
+            if (camera == null || camera.target != null)
                 return;
 
             camera.target = this.transform;

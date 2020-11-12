@@ -14,13 +14,13 @@ namespace Twindrums.TheWagaduChronicles.NPC
         private NPCStateData stateData;
         private NetworkedObject networkObject;
 
-        private void Awake()
+        private void OnEnable()
         {
             networkObject = GetComponent<NetworkedObject>();
             networkObject.CheckObjectVisibility += HandleCheckObjectVisibility;
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             networkObject.CheckObjectVisibility -= HandleCheckObjectVisibility;
         }
