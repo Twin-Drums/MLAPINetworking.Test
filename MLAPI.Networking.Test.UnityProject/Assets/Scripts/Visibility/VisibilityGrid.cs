@@ -11,10 +11,35 @@ namespace Twindrums.TheWagaduChronicles.Visibility
             public float y;
         }
 
-        private ushort cellSize;
-        private Dictionary<ulong, List<IVisibilityGridObject>> grid = new Dictionary<ulong, List<IVisibilityGridObject>>();
+        public struct GridPosition
+        {
+            public int x;
+            public int y;
+        }
 
-        public VisibilityGrid(ushort cellSize, ushort initialAmountOfCellLists = 10)
+        public class Cell
+        {            
+            public struct NeighborCells
+            {
+                public Cell Top;
+                public Cell TopRight;
+                public Cell Right;
+                public Cell BottomRight;
+                public Cell Bottom;
+                public Cell BottomLeft;
+                public Cell Left;
+                public Cell TopLeft;
+            }
+
+            public List<IVisibilityGridObject> Objects;
+            public ulong Id;
+            public NeighborCells Neighbors;
+        }
+
+        private float cellSize;
+        private Dictionary<ulong, Cell> grid = new Dictionary<ulong, Cell>();
+
+        public VisibilityGrid(float cellSize, ushort initialAmountOfCellLists = 10)
         {
             this.cellSize = cellSize;
         }
@@ -22,57 +47,103 @@ namespace Twindrums.TheWagaduChronicles.Visibility
         public ulong RegisterObject(IVisibilityGridObject gridObject)
         {
             var pos = gridObject.Position;
-            ulong cellId = GetCellId(pos.x, pos.y);
-            gridObject.CellId = cellId;
-            AddToList(gridObject);
+            ulong cellId = GetCellId(pos.x, pos.y);            
+            AddToCell(cellId, gridObject);
             return cellId;
         }
 
         public void UnregisterObject(IVisibilityGridObject gridObject)
         {
-            RemoveFromList(gridObject);
+            if (gridObject.Cell == null)
+                return;
+            RemoveFromCell(gridObject);
         }
 
-        private void AddToList(IVisibilityGridObject gridObject)
+        private void AddToCell(ulong cellId, IVisibilityGridObject gridObject)
         {
-            GetList(gridObject.CellId).Add(gridObject);
+            var cell = GetCell(cellId);
+            cell.Objects.Add(gridObject);
+            gridObject.Cell = cell;
         }
 
-        private void RemoveFromList(IVisibilityGridObject gridObject)
+        private void RemoveFromCell(IVisibilityGridObject gridObject)
         {
-            var list = GetList(gridObject.CellId);
-            list.Remove(gridObject);
-            if(list.Count == 0)
+            var cell = gridObject.Cell;
+
+            if(cell.Objects.Contains(gridObject))
+                cell.Objects.Remove(gridObject);
+
+            gridObject.Cell = null;
+
+            if(cell.Objects.Count == 0)
             {
-                grid.Remove(gridObject.CellId);
-                ReturnListToPool(list);
+                RemoveCell(cell);
             }
         }
 
-        private List<IVisibilityGridObject> GetList(ulong cellId)
+        private void RemoveCell(Cell cell)
         {
-            List<IVisibilityGridObject> list = null;
+            grid.Remove(cell.Id);
+            CleanUpNeighbors(cell);
+            ReturnListToPool(cell);
+        }
 
-            if(grid.TryGetValue(cellId, out list))
+        private void CleanUpNeighbors(Cell cell)
+        {
+            // todo
+        }
+
+        private Cell GetCell(ulong cellId)
+        {
+            Cell cell = null;
+
+            if(grid.TryGetValue(cellId, out cell))
             {
-                return list;
+                return cell;
             }
 
-            list = GetListFromPool();
-            grid[cellId] = list;
-            return list;
+            cell = GetListFromPool();
+            cell.Id = cellId;
+            grid[cellId] = cell;
+            SetUpNeighbors(cell);
+            return cell;
         }
 
-        private List<IVisibilityGridObject> GetListFromPool()
+        private struct NeighborConnector
         {
-            return new List<IVisibilityGridObject>();
+            public GridPosition Offset;
+            public Action<Cell, Cell> Connector;
+
+            public NeighborConnector(int offsetX, int offsetY, Action<Cell, Cell> connector)
+            {
+                Offset = new GridPosition { x = offsetX, y = offsetY };
+                Connector = connector;
+            }
         }
 
-        private void ReturnListToPool(List<IVisibilityGridObject> list)
+        private readonly List<NeighborConnector> neighborConnectors = new List<NeighborConnector>
         {
             
+        };
+
+        private void SetUpNeighbors(Cell cell)
+        {
+            var gridPos = GetGridPosition(cell.Id);
+
         }
 
-        private ulong GetCellId(float x, float y) => ((ulong)(x / cellSize) << 32) | (ulong)(y / cellSize);
+        private Cell GetListFromPool()
+        {
+            return new Cell() { Objects = new List<IVisibilityGridObject>() };// todo
+        }
+
+        private void ReturnListToPool(Cell cell)
+        {
+            // todo
+        }
+
+        public ulong GetCellId(float x, float y) => GetCellId((int)(x / cellSize), (int)(y / cellSize));
+        public static ulong GetCellId(int gridX, int gridY) => (((ulong)(uint)gridX) << 32) | ((ulong)(uint)gridY);
+        public static GridPosition GetGridPosition(ulong cellId) => new GridPosition { x = (int)(cellId >> 32), y = (int)cellId };
     }
 }
