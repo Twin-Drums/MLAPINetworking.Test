@@ -6,6 +6,7 @@ namespace Twindrums.TheWagaduChronicles.Visibility
     {
         VisibilityGrid.Position Position { get; }        
         VisibilityGrid.Cell Cell { get; set; }
+        bool ShouldUpdate { get; }
+        void GridPositionUpdated();
     }
 }
-

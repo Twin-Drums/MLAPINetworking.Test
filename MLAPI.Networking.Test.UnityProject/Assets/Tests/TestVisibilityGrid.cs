@@ -11,7 +11,9 @@ namespace Tests
     public class TestVisibilityGrid
     {
         private class DummyVisibilityGridObject : IVisibilityGridObject
-        {            
+        {
+            public event Action onGridPositionUpdated = delegate { };
+
             public DummyVisibilityGridObject(float x, float y)
             {
                 Position = new VisibilityGrid.Position { x = x, y = y };
@@ -20,6 +22,13 @@ namespace Tests
             public VisibilityGrid.Position Position { get; set; }
 
             public VisibilityGrid.Cell Cell { get; set; }
+
+            public bool ShouldUpdate => true;
+
+            public void GridPositionUpdated()
+            {
+                onGridPositionUpdated();
+            }
         }
 
         [Test]
