@@ -33,3 +33,4 @@ _ReSharper.Caches
 
 .shared-ci/
 perftest-results/
+/MLAPI.Networking.Test.UnityProject/token.json
