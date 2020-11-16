@@ -59,6 +59,9 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
             if (!nvo.IsPlayer)
                 return;
 
+            if (this.OwnerClientId == nvo.OwnerClientId)
+                return;
+
             if (this.NetworkedObject.IsNetworkVisibleTo(nvo.NetworkedObject.OwnerClientId))
                 this.NetworkedObject.NetworkHide(nvo.NetworkedObject.OwnerClientId);
         }
@@ -76,7 +79,10 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
             if (!(gridObject is NetworkVisibilityObject))
                 return;
 
-            var nvo = gridObject as NetworkVisibilityObject;            
+            var nvo = gridObject as NetworkVisibilityObject;
+
+            if (this.OwnerClientId == nvo.OwnerClientId)
+                return;
 
             if (!nvo.IsPlayer)
                 return;
