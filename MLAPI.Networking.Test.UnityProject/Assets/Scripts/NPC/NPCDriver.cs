@@ -12,18 +12,6 @@ namespace Twindrums.TheWagaduChronicles.NPC
     {
         private NPCStateMachine stateMachine;
         private NPCStateData stateData;
-        private NetworkedObject networkObject;
-
-        private void OnEnable()
-        {
-            networkObject = GetComponent<NetworkedObject>();
-            networkObject.CheckObjectVisibility += HandleCheckObjectVisibility;
-        }
-
-        private void OnDisable()
-        {
-            networkObject.CheckObjectVisibility -= HandleCheckObjectVisibility;
-        }
 
         private void Start()
         {
@@ -36,22 +24,6 @@ namespace Twindrums.TheWagaduChronicles.NPC
         {
             stateData.Time += Time.deltaTime;
             stateMachine.Update();
-        }
-
-        private bool HandleCheckObjectVisibility(ulong clientId)
-        {
-            if (Vector3.Distance(NetworkingManager.Singleton.ConnectedClients[clientId].PlayerObject.transform.position, transform.position) > 5)
-            {
-                // Only show the object to players that are within 5 meters. Note that this has to be rechecked by your own code
-                // If you want it to update as the client and objects distance change.
-                // This callback is usually only called once per client
-                return true;
-            }
-            else
-            {
-                // Dont show this object
-                return false;
-            }
         }
     }
 }

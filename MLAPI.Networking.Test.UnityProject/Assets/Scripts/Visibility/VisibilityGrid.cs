@@ -64,8 +64,7 @@ namespace Twindrums.TheWagaduChronicles.Visibility
                 return;
 
             objects.Add(gridObject);            
-            AddToCell(GetCellId(gridObject.Position.x, gridObject.Position.y), gridObject);
-            gridObject.GridPositionUpdated();
+            AddToCell(GetCellId(gridObject.Position.x, gridObject.Position.y), gridObject);            
             return;
         }
 
@@ -92,8 +91,7 @@ namespace Twindrums.TheWagaduChronicles.Visibility
                 if (gridObject.Cell.Id == cellId)
                     continue;
                 RemoveFromCell(gridObject);
-                AddToCell(cellId, gridObject);
-                gridObject.GridPositionUpdated();
+                AddToCell(cellId, gridObject);                
             }
         }
 
