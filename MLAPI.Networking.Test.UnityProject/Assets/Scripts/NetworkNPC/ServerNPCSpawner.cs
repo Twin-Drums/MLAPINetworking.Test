@@ -15,7 +15,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkNPC
             Debug.Log("[ServerNPCSpawner::NetworkStart]");
             if(IsServer)
             {
-                Debug.Log("[ServerNPCSpawner::NetworkStart] Spawning " + 100 + " NPCs");
+                Debug.Log("[ServerNPCSpawner::NetworkStart] Spawning " + amount + " NPCs");
                 for (int i = 0; i < amount; i++)
                 {
                     var pos = new Vector3(UnityEngine.Random.Range(bounds.min.x, bounds.max.x), UnityEngine.Random.Range(bounds.min.y, bounds.max.y), UnityEngine.Random.Range(bounds.min.z, bounds.max.z));

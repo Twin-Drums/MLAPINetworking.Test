@@ -39,41 +39,19 @@ namespace Twindrums.TheWagaduChronicles.Visibility
 
             public void Add(IVisibilityGridObject gridObject)
             {
-                Objects.Add(gridObject);
-                var broadcast = new CellClusterUpdate(CellClusterUpdate.UpdateType.Add, gridObject);                
-            }
-
-            private void BroadcastWithCell(Cell cell, CellClusterUpdate update) => cell.Broadcast(update);
+                Objects.Add(gridObject);                
+                Broadcast(new CellClusterUpdate(CellClusterUpdate.UpdateType.Added, gridObject));
+            }            
 
             public void Remove(IVisibilityGridObject gridObject)
             {
-                Objects.Remove(gridObject);            
+                Objects.Remove(gridObject);
+                Broadcast(new CellClusterUpdate(CellClusterUpdate.UpdateType.Removed, gridObject));
             }
 
             public void Broadcast(CellClusterUpdate update)
             {
                 this.onClusterUpdated(update);
-            }
-
-            public void ForAllCellsInCluster(Action<Cell> action)
-            {
-                action(this);
-                if(Neighbors.Top != null)
-                    action(Neighbors.Top);
-                if (Neighbors.TopRight != null)
-                    action(Neighbors.TopRight);
-                if (Neighbors.Right != null)
-                    action(Neighbors.Right);
-                if (Neighbors.BottomRight != null)
-                    action(Neighbors.BottomRight);
-                if (Neighbors.Bottom != null)
-                    action(Neighbors.Bottom);
-                if (Neighbors.BottomLeft != null)
-                    action(Neighbors.BottomLeft);
-                if (Neighbors.Left != null)
-                    action(Neighbors.Left);
-                if (Neighbors.TopLeft != null)
-                    action(Neighbors.TopLeft);
             }
 
             public void Reset()
@@ -93,7 +71,7 @@ namespace Twindrums.TheWagaduChronicles.Visibility
 
         public struct CellClusterUpdate
         {
-            public enum UpdateType { Add, Remove }
+            public enum UpdateType { Added, Removed }
 
             public UpdateType Type;
             public IVisibilityGridObject Object;
@@ -154,7 +132,7 @@ namespace Twindrums.TheWagaduChronicles.Visibility
         private void AddToCell(ulong cellId, IVisibilityGridObject gridObject)
         {
             var cell = GetCell(cellId);
-            cell.Objects.Add(gridObject);            
+            cell.Add(gridObject);            
             gridObject.Cell = cell;
         }
 
@@ -163,7 +141,7 @@ namespace Twindrums.TheWagaduChronicles.Visibility
             var cell = gridObject.Cell;
 
             if(cell.Objects.Contains(gridObject))
-                cell.Objects.Remove(gridObject);
+                cell.Remove(gridObject);
 
             gridObject.Cell = null;
 
