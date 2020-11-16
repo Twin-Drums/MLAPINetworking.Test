@@ -31,9 +31,50 @@ namespace Twindrums.TheWagaduChronicles.Visibility
                 public Cell TopLeft;
             }
 
+            public event Action<CellClusterUpdate> onClusterUpdated = delegate { };
+
             public List<IVisibilityGridObject> Objects;
             public ulong Id;
             public NeighborCells Neighbors;
+
+            public void Add(IVisibilityGridObject gridObject)
+            {
+                Objects.Add(gridObject);
+                var broadcast = new CellClusterUpdate(CellClusterUpdate.UpdateType.Add, gridObject);                
+            }
+
+            private void BroadcastWithCell(Cell cell, CellClusterUpdate update) => cell.Broadcast(update);
+
+            public void Remove(IVisibilityGridObject gridObject)
+            {
+                Objects.Remove(gridObject);            
+            }
+
+            public void Broadcast(CellClusterUpdate update)
+            {
+                this.onClusterUpdated(update);
+            }
+
+            public void ForAllCellsInCluster(Action<Cell> action)
+            {
+                action(this);
+                if(Neighbors.Top != null)
+                    action(Neighbors.Top);
+                if (Neighbors.TopRight != null)
+                    action(Neighbors.TopRight);
+                if (Neighbors.Right != null)
+                    action(Neighbors.Right);
+                if (Neighbors.BottomRight != null)
+                    action(Neighbors.BottomRight);
+                if (Neighbors.Bottom != null)
+                    action(Neighbors.Bottom);
+                if (Neighbors.BottomLeft != null)
+                    action(Neighbors.BottomLeft);
+                if (Neighbors.Left != null)
+                    action(Neighbors.Left);
+                if (Neighbors.TopLeft != null)
+                    action(Neighbors.TopLeft);
+            }
 
             public void Reset()
             {
@@ -46,6 +87,21 @@ namespace Twindrums.TheWagaduChronicles.Visibility
                 Neighbors.BottomLeft = null;
                 Neighbors.Left = null;
                 Neighbors.TopLeft = null;
+                onClusterUpdated = delegate { };
+            }
+        }
+
+        public struct CellClusterUpdate
+        {
+            public enum UpdateType { Add, Remove }
+
+            public UpdateType Type;
+            public IVisibilityGridObject Object;
+
+            public CellClusterUpdate(UpdateType Type, IVisibilityGridObject gridObject)
+            {
+                this.Type = Type;
+                this.Object = gridObject;
             }
         }
 
@@ -98,7 +154,7 @@ namespace Twindrums.TheWagaduChronicles.Visibility
         private void AddToCell(ulong cellId, IVisibilityGridObject gridObject)
         {
             var cell = GetCell(cellId);
-            cell.Objects.Add(gridObject);
+            cell.Objects.Add(gridObject);            
             gridObject.Cell = cell;
         }
 

@@ -8,32 +8,19 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
 {
     public class NetworkVisibilityObject : NetworkedBehaviour, IVisibilityGridObject
     {
-        public static VisibilityGrid Grid
-        {
-            get
-            {
-                if(grid == null)
-                {
-                    grid = new VisibilityGrid(50, 10);
-                }
-                return grid;
-            }
-        }
-        private static VisibilityGrid grid;
-
-
         public VisibilityGrid.Position Position =>  new VisibilityGrid.Position() { x = this.transform.position.x, y = this.transform.position.y };
 
-        public VisibilityGrid.Cell Cell { get { return cell; } set { SetCellInternal(Cell); } }
+        public VisibilityGrid.Cell Cell { get { return cell; } set { SetCellInternal(value); } }
         private VisibilityGrid.Cell cell;
 
         private void SetCellInternal(VisibilityGrid.Cell cell)
         {
-            cell = Cell;
-            UpdateVisibility();
+            var oldCell = cell;
+            this.cell = cell;
+            UpdateVisibility(oldCell, cell);
         }
 
-        private void UpdateVisibility()
+        private void UpdateVisibility(VisibilityGrid.Cell oldCell, VisibilityGrid.Cell cell)
         {
             
         }
@@ -45,7 +32,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
             if (!IsServer)
                 return;
 
-            Grid.RegisterObject(this);
+            NetworkedVisibility.Grid.RegisterObject(this);
             NetworkedObject.CheckObjectVisibility += HandleCheckObjectVisibility;
         }
 
@@ -55,7 +42,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
                 return;
 
             NetworkedObject.CheckObjectVisibility -= HandleCheckObjectVisibility;
-            Grid.UnregisterObject(this);
+            NetworkedVisibility.Grid.UnregisterObject(this);
         }
 
         private bool HandleCheckObjectVisibility(ulong clientId)
