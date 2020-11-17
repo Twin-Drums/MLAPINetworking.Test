@@ -17,14 +17,14 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
 
         public bool IsPlayer;
 
-        private void SetCellInternal(VisibilityGrid.Cell cell)
+        private void SetCellInternal(VisibilityGrid.Cell newCell)
         {
-            var oldCell = cell;
-            this.cell = cell;
-            UpdateVisibility(oldCell, cell);
+            var oldCell = this.cell;
+            this.cell = newCell;
+            UpdateVisibility(oldCell, newCell);
         }
 
-        private void UpdateVisibility(VisibilityGrid.Cell oldCell, VisibilityGrid.Cell cell)
+        private void UpdateVisibility(VisibilityGrid.Cell oldCell, VisibilityGrid.Cell newCell)
         {
             if(oldCell != null)
             {
@@ -32,12 +32,12 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
                 RemovePlayerVisibility(oldCell.Objects);
             }
 
-            if (cell == null)
+            if (newCell == null)
                 return;
 
-            AddPlayerVisibility(cell.Objects);
+            AddPlayerVisibility(newCell.Objects);
 
-            cell.onClusterUpdated += HandleClusterUpdated;
+            newCell.onClusterUpdated += HandleClusterUpdated;
 
         }
 
@@ -56,7 +56,10 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
 
             var nvo = gridObject as NetworkVisibilityObject;
 
-            if (!nvo.IsPlayer)
+            if (nvo.OwnerClientId == 0)//Server
+                return;
+
+            if (!IsPlayer && !nvo.IsPlayer)
                 return;
 
             if (this.OwnerClientId == nvo.OwnerClientId)
@@ -81,10 +84,13 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
 
             var nvo = gridObject as NetworkVisibilityObject;
 
+            if (nvo.OwnerClientId == 0)//Server
+                return;
+
             if (this.OwnerClientId == nvo.OwnerClientId)
                 return;
 
-            if (!nvo.IsPlayer)
+            if (!IsPlayer && !nvo.IsPlayer)
                 return;
 
             if (!this.NetworkedObject.IsNetworkVisibleTo(nvo.NetworkedObject.OwnerClientId))
