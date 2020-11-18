@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5899908842208903198}
   - component: {fileID: -3345945533890611198}
   - component: {fileID: -1376186904409823603}
-  - component: {fileID: -8006521252714675270}
+  - component: {fileID: 7341156761387844565}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Untagged
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   color: {r: 0, g: 0.5169192, b: 0.972549, a: 1}
---- !u!114 &-8006521252714675270
+--- !u!114 &7341156761387844565
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -177,6 +177,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5106127699042387018}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adfdc4e70dab2454c81247b9313ecc52, type: 3}
+  m_Script: {fileID: 11500000, guid: af1e27fc2463f48a9af78f6c9bc80ebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsPlayer: 0

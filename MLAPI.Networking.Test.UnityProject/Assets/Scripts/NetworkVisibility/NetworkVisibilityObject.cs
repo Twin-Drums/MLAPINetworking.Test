@@ -13,35 +13,50 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
         public Cell.Position Position =>  new Cell.Position() { x = this.transform.position.x, y = this.transform.position.z };
 
         public ICell Cell { get { return cell; } set { SetCellInternal(value); } }
-        private ICell cell;
+        protected ICell cell;
 
         public bool IsPlayer;
 
-        private void SetCellInternal(ICell newCell)
+        protected virtual void SetCellInternal(ICell newCell)
         {
             var oldCell = this.cell;
             this.cell = newCell;
             HandleCellChanged(oldCell, newCell);
         }
 
-        private void HandleCellChanged(ICell oldCell, ICell newCell)
+        protected virtual void HandleCellChanged(ICell oldCell, ICell newCell)
         {
             if(oldCell != null)
             {
                 oldCell.onClusterUpdated -= HandleClusterUpdated;
                 RemovePlayerVisibility(oldCell.Objects);
+                if (IsPlayer)
+                    RemovePlayer(oldCell);
             }
 
             if (newCell == null)
                 return;
 
             AddPlayerVisibility(newCell.Objects);
+            if (IsPlayer)
+                AddPlayer(newCell);
 
             newCell.onClusterUpdated += HandleClusterUpdated;
-
         }
 
-        private void RemovePlayerVisibility(List<IVisibilityGridObject> objects)
+        protected virtual void RemovePlayer(ICell cell)
+        {
+            var networkCell = cell as NetworkedVisibility.NetworkCell;
+            networkCell.RemovePlayer(this);
+        }
+
+        protected virtual void AddPlayer(ICell cell)
+        {
+            var networkCell = cell as NetworkedVisibility.NetworkCell;
+            networkCell.AddPlayer(this);
+        }
+
+        protected virtual void RemovePlayerVisibility(List<IVisibilityGridObject> objects)
         {
             foreach (var item in objects)
             {
@@ -49,7 +64,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
             }
         }
 
-        private void RemovePlayerVisibility(IVisibilityGridObject gridObject)
+        protected virtual void RemovePlayerVisibility(IVisibilityGridObject gridObject)
         {
             if (!(gridObject is NetworkVisibilityObject))
                 return;
@@ -69,7 +84,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
                 this.NetworkedObject.NetworkHide(nvo.NetworkedObject.OwnerClientId);
         }
 
-        private void AddPlayerVisibility(List<IVisibilityGridObject> objects)
+        protected virtual void AddPlayerVisibility(List<IVisibilityGridObject> objects)
         {
             foreach (var item in objects)
             {
@@ -77,7 +92,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
             }
         }
 
-        private void AddPlayerVisibility(IVisibilityGridObject gridObject)
+        protected virtual void AddPlayerVisibility(IVisibilityGridObject gridObject)
         {
             if (!(gridObject is NetworkVisibilityObject))
                 return;
@@ -97,7 +112,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
                 this.NetworkedObject.NetworkShow(nvo.NetworkedObject.OwnerClientId);
         }
 
-        private void HandleClusterUpdated(Cell.CellClusterUpdate clusterUpdate)
+        protected virtual void HandleClusterUpdated(Cell.CellClusterUpdate clusterUpdate)
         {
             switch (clusterUpdate.Type)
             {
@@ -110,7 +125,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
             }
         }
 
-        public bool ShouldUpdate => true;
+        public virtual bool ShouldUpdate => true;
 
         public override void NetworkStart()
         {
@@ -121,7 +136,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
             NetworkedObject.CheckObjectVisibility += HandleCheckObjectVisibility;
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (!IsServer)
                 return;
@@ -130,7 +145,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
             NetworkedVisibility.Grid.UnregisterObject(this);
         }
 
-        private bool HandleCheckObjectVisibility(ulong clientId)
+        protected virtual bool HandleCheckObjectVisibility(ulong clientId)
         {
             return IsPlayer && (this.NetworkedObject.OwnerClientId == clientId);
         }
