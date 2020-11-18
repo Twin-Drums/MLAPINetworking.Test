@@ -14,12 +14,12 @@ namespace Tests
         {            
             public DummyVisibilityGridObject(float x, float y)
             {
-                Position = new VisibilityGrid.Position { x = x, y = y };
+                Position = new Cell.Position { x = x, y = y };
             }
 
-            public VisibilityGrid.Position Position { get; set; }
+            public Cell.Position Position { get; set; }
 
-            public VisibilityGrid.Cell Cell { get; set; }
+            public Cell Cell { get; set; }
 
             public bool ShouldUpdate => true;
         }

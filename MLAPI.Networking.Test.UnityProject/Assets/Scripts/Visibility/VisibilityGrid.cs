@@ -5,84 +5,6 @@ namespace Twindrums.TheWagaduChronicles.Visibility
 {
     public class VisibilityGrid
     {
-        public struct Position
-        {
-            public float x;
-            public float y;
-        }
-
-        public struct GridPosition
-        {
-            public int x;
-            public int y;
-        }
-
-        public class Cell
-        {            
-            public struct NeighborCells
-            {
-                public Cell Top;
-                public Cell TopRight;
-                public Cell Right;
-                public Cell BottomRight;
-                public Cell Bottom;
-                public Cell BottomLeft;
-                public Cell Left;
-                public Cell TopLeft;
-            }
-
-            public event Action<CellClusterUpdate> onClusterUpdated = delegate { };
-
-            public List<IVisibilityGridObject> Objects;
-            public ulong Id;
-            public NeighborCells Neighbors;
-
-            public void Add(IVisibilityGridObject gridObject)
-            {
-                Objects.Add(gridObject);                
-                Broadcast(new CellClusterUpdate(CellClusterUpdate.UpdateType.Added, gridObject));
-            }            
-
-            public void Remove(IVisibilityGridObject gridObject)
-            {
-                Objects.Remove(gridObject);
-                Broadcast(new CellClusterUpdate(CellClusterUpdate.UpdateType.Removed, gridObject));
-            }
-
-            public void Broadcast(CellClusterUpdate update)
-            {
-                this.onClusterUpdated(update);
-            }
-
-            public void Reset()
-            {
-                this.Objects.Clear();
-                Neighbors.Top = null;
-                Neighbors.TopRight = null;
-                Neighbors.Right = null;
-                Neighbors.BottomRight = null;
-                Neighbors.Bottom = null;
-                Neighbors.BottomLeft = null;
-                Neighbors.Left = null;
-                Neighbors.TopLeft = null;
-                onClusterUpdated = delegate { };
-            }
-        }
-
-        public struct CellClusterUpdate
-        {
-            public enum UpdateType { Added, Removed }
-
-            public UpdateType Type;
-            public IVisibilityGridObject Object;
-
-            public CellClusterUpdate(UpdateType Type, IVisibilityGridObject gridObject)
-            {
-                this.Type = Type;
-                this.Object = gridObject;
-            }
-        }
-
         private float cellSize;
         private readonly Dictionary<ulong, Cell> grid = new Dictionary<ulong, Cell>();
         private readonly List<IVisibilityGridObject> objects = new List<IVisibilityGridObject>();
@@ -178,12 +100,12 @@ namespace Twindrums.TheWagaduChronicles.Visibility
 
         private struct NeighborConnector
         {
-            public GridPosition Offset;
+            public Cell.GridPosition Offset;
             public Action<Cell, Cell> Connector;
 
             public NeighborConnector(int offsetX, int offsetY, Action<Cell, Cell> connector)
             {
-                Offset = new GridPosition { x = offsetX, y = offsetY };
+                Offset = new Cell.GridPosition { x = offsetX, y = offsetY };
                 Connector = connector;
             }
         }
@@ -256,7 +178,7 @@ namespace Twindrums.TheWagaduChronicles.Visibility
 
         public ulong GetCellId(float x, float y) => GetCellId((int)(x / cellSize), (int)(y / cellSize));
         public static ulong GetCellId(int gridX, int gridY) => (((ulong)(uint)gridX) << 32) | ((ulong)(uint)gridY);
-        public static GridPosition GetGridPosition(ulong cellId) => new GridPosition { x = (int)(cellId >> 32), y = (int)cellId };
+        public static Cell.GridPosition GetGridPosition(ulong cellId) => new Cell.GridPosition { x = (int)(cellId >> 32), y = (int)cellId };
 
         #endregion
     }

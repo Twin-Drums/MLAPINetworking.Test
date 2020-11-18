@@ -10,21 +10,21 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
 {
     public class NetworkVisibilityObject : NetworkedBehaviour, IVisibilityGridObject
     {
-        public VisibilityGrid.Position Position =>  new VisibilityGrid.Position() { x = this.transform.position.x, y = this.transform.position.z };
+        public Cell.Position Position =>  new Cell.Position() { x = this.transform.position.x, y = this.transform.position.z };
 
-        public VisibilityGrid.Cell Cell { get { return cell; } set { SetCellInternal(value); } }
-        private VisibilityGrid.Cell cell;
+        public Cell Cell { get { return cell; } set { SetCellInternal(value); } }
+        private Cell cell;
 
         public bool IsPlayer;
 
-        private void SetCellInternal(VisibilityGrid.Cell newCell)
+        private void SetCellInternal(Cell newCell)
         {
             var oldCell = this.cell;
             this.cell = newCell;
-            UpdateVisibility(oldCell, newCell);
+            HandleCellChanged(oldCell, newCell);
         }
 
-        private void UpdateVisibility(VisibilityGrid.Cell oldCell, VisibilityGrid.Cell newCell)
+        private void HandleCellChanged(Cell oldCell, Cell newCell)
         {
             if(oldCell != null)
             {
@@ -97,14 +97,14 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
                 this.NetworkedObject.NetworkShow(nvo.NetworkedObject.OwnerClientId);
         }
 
-        private void HandleClusterUpdated(VisibilityGrid.CellClusterUpdate clusterUpdate)
+        private void HandleClusterUpdated(Cell.CellClusterUpdate clusterUpdate)
         {
             switch (clusterUpdate.Type)
             {
-                case VisibilityGrid.CellClusterUpdate.UpdateType.Added:
+                case Cell.CellClusterUpdate.UpdateType.Added:
                     AddPlayerVisibility(clusterUpdate.Object);
                     break;
-                case VisibilityGrid.CellClusterUpdate.UpdateType.Removed:
+                case Cell.CellClusterUpdate.UpdateType.Removed:
                     RemovePlayerVisibility(clusterUpdate.Object);
                     break;
             }

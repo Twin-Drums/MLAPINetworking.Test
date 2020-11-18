@@ -4,8 +4,8 @@ namespace Twindrums.TheWagaduChronicles.Visibility
 {
     public interface IVisibilityGridObject
     {
-        VisibilityGrid.Position Position { get; }        
-        VisibilityGrid.Cell Cell { get; set; }
+        Cell.Position Position { get; }        
+        Cell Cell { get; set; }
         bool ShouldUpdate { get; }        
     }
 }
