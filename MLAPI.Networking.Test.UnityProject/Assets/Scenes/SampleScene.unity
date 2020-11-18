@@ -809,7 +809,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de3e3604a27d64b74a4138c47426949f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ConnectAddress: 127.0.0.1
+  ConnectAddress: 3.125.253.110
   Port: 7777
   Channels: []
   TransportBufferSize: 8192
@@ -7655,7 +7655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 5106127699042387018, guid: 9b5c218257ada4335920504fcbc6b3f3, type: 3}
-  amount: 5000
+  amount: 10000
   bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 500, y: 0, z: 500}
