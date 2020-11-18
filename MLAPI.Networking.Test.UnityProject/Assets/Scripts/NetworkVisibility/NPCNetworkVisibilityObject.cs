@@ -13,7 +13,7 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
     public class NPCNetworkVisibilityObject: NetworkVisibilityObject
     {
         public override bool ShouldUpdate => base.ShouldUpdate && shouldUpdate;
-        private bool shouldUpdate = true;
+        private bool shouldUpdate = true;        
 
         protected override void HandleCellChanged(ICell oldCell, ICell newCell)
         {
@@ -26,43 +26,30 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
                 return;
 
             (newCell as NetworkedVisibility.NetworkCell).onPlayersUpdated += HandlePlayersUpdated;
-            UpdateEnabledState(newCell);
+            UpdateEnabledState(newCell);            
         }
 
         private void HandlePlayersUpdated(Cell.CellClusterUpdate update)
-        {
+        {            
             if (Cell == null)
                 return;
 
             UpdateEnabledState(Cell);
         }
 
-        protected override void HandleClusterUpdated(Cell.CellClusterUpdate clusterUpdate)
-        {
-            base.HandleClusterUpdated(clusterUpdate);
-
-            var nvo = clusterUpdate.Object as NetworkVisibilityObject;
-
-            if (!nvo.IsPlayer)
-                return;
-
-            UpdateEnabledState(Cell);
-        }
-
         private void UpdateEnabledState(ICell cell)
-        {                        
+        {
             var networkCell = cell as NetworkedVisibility.NetworkCell;
             bool hasPlayers = networkCell.Players.Count > 0;
 
             if (gameObject.activeSelf && !hasPlayers)
             {
-                gameObject.SetActive(false);
+                gameObject.SetActive(false);                
                 shouldUpdate = false;
             }
-
-            if (!gameObject.activeSelf && hasPlayers)
+            else if (!gameObject.activeSelf && hasPlayers)
             {
-                gameObject.SetActive(true);
+                gameObject.SetActive(true);                
                 shouldUpdate = true;
             }
         }
