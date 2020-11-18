@@ -12,19 +12,19 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
     {
         public Cell.Position Position =>  new Cell.Position() { x = this.transform.position.x, y = this.transform.position.z };
 
-        public Cell Cell { get { return cell; } set { SetCellInternal(value); } }
-        private Cell cell;
+        public ICell Cell { get { return cell; } set { SetCellInternal(value); } }
+        private ICell cell;
 
         public bool IsPlayer;
 
-        private void SetCellInternal(Cell newCell)
+        private void SetCellInternal(ICell newCell)
         {
             var oldCell = this.cell;
             this.cell = newCell;
             HandleCellChanged(oldCell, newCell);
         }
 
-        private void HandleCellChanged(Cell oldCell, Cell newCell)
+        private void HandleCellChanged(ICell oldCell, ICell newCell)
         {
             if(oldCell != null)
             {
@@ -101,10 +101,10 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
         {
             switch (clusterUpdate.Type)
             {
-                case Cell.CellClusterUpdate.UpdateType.Added:
+                case  Visibility.Cell.CellClusterUpdate.UpdateType.Added:
                     AddPlayerVisibility(clusterUpdate.Object);
                     break;
-                case Cell.CellClusterUpdate.UpdateType.Removed:
+                case Visibility.Cell.CellClusterUpdate.UpdateType.Removed:
                     RemovePlayerVisibility(clusterUpdate.Object);
                     break;
             }

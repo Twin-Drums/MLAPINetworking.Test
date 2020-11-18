@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Twindrums.TheWagaduChronicles.Visibility
 {
-    public class VisibilityGrid
+    public class VisibilityGrid<T> where T : ICell, new()
     {
         private float cellSize;
-        private readonly Dictionary<ulong, Cell> grid = new Dictionary<ulong, Cell>();
+        private readonly Dictionary<ulong, ICell> grid = new Dictionary<ulong, ICell>();
         private readonly List<IVisibilityGridObject> objects = new List<IVisibilityGridObject>();
 
         public VisibilityGrid(float cellSize, ushort initialAmountOfCellLists = 10)
@@ -19,8 +19,8 @@ namespace Twindrums.TheWagaduChronicles.Visibility
             if (objects.Contains(gridObject))
                 return;
 
-            objects.Add(gridObject);            
-            AddToCell(GetCellId(gridObject.Position.x, gridObject.Position.y), gridObject);            
+            objects.Add(gridObject);
+            AddToCell(GetCellId(gridObject.Position.x, gridObject.Position.y), gridObject);
             return;
         }
 
@@ -47,14 +47,14 @@ namespace Twindrums.TheWagaduChronicles.Visibility
                 if (gridObject.Cell.Id == cellId)
                     continue;
                 RemoveFromCell(gridObject);
-                AddToCell(cellId, gridObject);                
+                AddToCell(cellId, gridObject);
             }
         }
 
         private void AddToCell(ulong cellId, IVisibilityGridObject gridObject)
         {
             var cell = GetCell(cellId);
-            cell.Add(gridObject);            
+            cell.Add(gridObject);
             gridObject.Cell = cell;
         }
 
@@ -62,29 +62,29 @@ namespace Twindrums.TheWagaduChronicles.Visibility
         {
             var cell = gridObject.Cell;
 
-            if(cell.Objects.Contains(gridObject))
+            if (cell.Objects.Contains(gridObject))
                 cell.Remove(gridObject);
 
             gridObject.Cell = null;
 
-            if(cell.Objects.Count == 0)
+            if (cell.Objects.Count == 0)
             {
                 RemoveCell(cell);
             }
         }
 
-        private void RemoveCell(Cell cell)
+        private void RemoveCell(ICell cell)
         {
             grid.Remove(cell.Id);
-            CleanUpNeighbors(cell);
+            cell.Reset();
             ReturnListToPool(cell);
         }
 
-        private Cell GetCell(ulong cellId)
+        private ICell GetCell(ulong cellId)
         {
-            Cell cell = null;
+            ICell cell = null;
 
-            if(grid.TryGetValue(cellId, out cell))
+            if (grid.TryGetValue(cellId, out cell))
             {
                 return cell;
             }
@@ -92,82 +92,18 @@ namespace Twindrums.TheWagaduChronicles.Visibility
             cell = GetListFromPool();
             cell.Id = cellId;
             grid[cellId] = cell;
-            SetUpNeighbors(cell);
+            cell.SetUpNeighbors(grid);
             return cell;
         }
 
-        #region Cell Neighbors
-
-        private struct NeighborConnector
-        {
-            public Cell.GridPosition Offset;
-            public Action<Cell, Cell> Connector;
-
-            public NeighborConnector(int offsetX, int offsetY, Action<Cell, Cell> connector)
-            {
-                Offset = new Cell.GridPosition { x = offsetX, y = offsetY };
-                Connector = connector;
-            }
-        }
-
-        private readonly List<NeighborConnector> neighborConnectors = new List<NeighborConnector>
-        {
-            new NeighborConnector(0, 1, (origin, neighbor) => { origin.Neighbors.Top = neighbor; neighbor.Neighbors.Bottom = origin; }),
-            new NeighborConnector(1, 1, (origin, neighbor) => { origin.Neighbors.TopRight = neighbor; neighbor.Neighbors.BottomLeft = origin; }),
-            new NeighborConnector(1, 0, (origin, neighbor) => { origin.Neighbors.Right = neighbor; neighbor.Neighbors.Left = origin; }),
-            new NeighborConnector(1, -1, (origin, neighbor) => { origin.Neighbors.BottomRight = neighbor; neighbor.Neighbors.TopLeft = origin; }),
-            new NeighborConnector(0, -1, (origin, neighbor) => { origin.Neighbors.Bottom = neighbor; neighbor.Neighbors.Top = origin; }),
-            new NeighborConnector(-1, -1, (origin, neighbor) => { origin.Neighbors.BottomLeft = neighbor; neighbor.Neighbors.TopRight = origin; }),
-            new NeighborConnector(-1, 0, (origin, neighbor) => { origin.Neighbors.Left = neighbor; neighbor.Neighbors.Right = origin; }),
-            new NeighborConnector(-1, 1, (origin, neighbor) => { origin.Neighbors.TopLeft = neighbor; neighbor.Neighbors.BottomRight = origin; }),            
-        };
-
-        private void SetUpNeighbors(Cell cell)
-        {
-            var gridPos = GetGridPosition(cell.Id);
-
-            for (int i = 0; i < neighborConnectors.Count; i++)
-            {
-                var nc = neighborConnectors[i];
-                var neighborId = GetCellId(gridPos.x + nc.Offset.x, gridPos.y + nc.Offset.y);
-
-                Cell neighbor = null;
-                if (!grid.TryGetValue(neighborId, out neighbor))
-                    continue;
-
-                nc.Connector(cell, neighbor);
-            }
-        }
-
-        private void CleanUpNeighbors(Cell cell)
-        {
-            if (cell.Neighbors.Top != null)
-                cell.Neighbors.Top.Neighbors.Bottom = null;
-            if (cell.Neighbors.TopRight != null)
-                cell.Neighbors.TopRight.Neighbors.BottomLeft = null;
-            if (cell.Neighbors.Right != null)
-                cell.Neighbors.Right.Neighbors.Left = null;
-            if (cell.Neighbors.BottomRight != null)
-                cell.Neighbors.BottomRight.Neighbors.TopLeft = null;
-            if (cell.Neighbors.Bottom != null)
-                cell.Neighbors.Bottom.Neighbors.Top = null;
-            if (cell.Neighbors.BottomLeft != null)
-                cell.Neighbors.BottomLeft.Neighbors.TopRight = null;
-            if (cell.Neighbors.Left != null)
-                cell.Neighbors.Left.Neighbors.Right = null;
-            if (cell.Neighbors.TopLeft != null)
-                cell.Neighbors.TopLeft.Neighbors.BottomRight = null;
-        }
-
-        #endregion
         #region Cell Pool
 
-        private Cell GetListFromPool()
+        private T GetListFromPool()
         {
-            return new Cell() { Objects = new List<IVisibilityGridObject>() };// todo
+            return new T();// todo
         }
 
-        private void ReturnListToPool(Cell cell)
+        private void ReturnListToPool(ICell cell)
         {
             cell.Reset();
             // todo
@@ -176,10 +112,14 @@ namespace Twindrums.TheWagaduChronicles.Visibility
         #endregion
         #region Cell Id
 
-        public ulong GetCellId(float x, float y) => GetCellId((int)(x / cellSize), (int)(y / cellSize));
-        public static ulong GetCellId(int gridX, int gridY) => (((ulong)(uint)gridX) << 32) | ((ulong)(uint)gridY);
-        public static Cell.GridPosition GetGridPosition(ulong cellId) => new Cell.GridPosition { x = (int)(cellId >> 32), y = (int)cellId };
+        public ulong GetCellId(float x, float y) => VisibilityGridHelper.GetCellId((int)(x / cellSize), (int)(y / cellSize));
 
         #endregion
+    }
+
+    public static class VisibilityGridHelper
+    {
+        public static ulong GetCellId(int gridX, int gridY) => (((ulong)(uint)gridX) << 32) | ((ulong)(uint)gridY);
+        public static Cell.GridPosition GetGridPosition(ulong cellId) => new Cell.GridPosition { x = (int)(cellId >> 32), y = (int)cellId };
     }
 }

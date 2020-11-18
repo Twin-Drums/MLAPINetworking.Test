@@ -8,18 +8,18 @@ namespace Twindrums.TheWagaduChronicles.NetworkVisibility
 {
     public class NetworkedVisibility : NetworkedBehaviour
     {
-        public static VisibilityGrid Grid
+        public static VisibilityGrid<Cell> Grid
         {
             get
             {
                 if (grid == null)
                 {
-                    grid = new VisibilityGrid(50, 10);
+                    grid = new VisibilityGrid<Cell>(50, 10);
                 }
                 return grid;
             }
         }
-        private static VisibilityGrid grid;
+        private static VisibilityGrid<Cell> grid;
 
         [SerializeField] private float updateIntervalSeconds = 2.2f;
         private float updateDelay;

@@ -19,9 +19,14 @@ namespace Tests
 
             public Cell.Position Position { get; set; }
 
-            public Cell Cell { get; set; }
+            public ICell Cell { get; set; }
 
             public bool ShouldUpdate => true;
+        }
+
+        private class TestCell : Cell
+        {
+            public NeighborCells Neighbors => neighbors;
         }
 
         [Test]
@@ -29,35 +34,35 @@ namespace Tests
         {            
             int gridX = 23563;
             int gridY = -985462;
-            var id = VisibilityGrid.GetCellId(gridX, gridY);            
-            var position = VisibilityGrid.GetGridPosition(id);
+            var id = VisibilityGridHelper.GetCellId(gridX, gridY);            
+            var position = VisibilityGridHelper.GetGridPosition(id);
             Assert.AreEqual(gridX, position.x);
             Assert.AreEqual(gridY, position.y);
 
             gridX = -652546;
             gridY = 985462;
-            id = VisibilityGrid.GetCellId(gridX, gridY);            
-            position = VisibilityGrid.GetGridPosition(id);
+            id = VisibilityGridHelper.GetCellId(gridX, gridY);            
+            position = VisibilityGridHelper.GetGridPosition(id);
             Assert.AreEqual(gridX, position.x);
             Assert.AreEqual(gridY, position.y);
 
             gridX = -2436;
             gridY = -234;
-            id = VisibilityGrid.GetCellId(gridX, gridY);
-            position = VisibilityGrid.GetGridPosition(id);
+            id = VisibilityGridHelper.GetCellId(gridX, gridY);
+            position = VisibilityGridHelper.GetGridPosition(id);
             Assert.AreEqual(gridX, position.x);
             Assert.AreEqual(gridY, position.y);
         }
-        
+
         [Test]
         public void CanRegisterGridObject()
         {
-            var grid = new VisibilityGrid(1f);
-            var gridObject = new DummyVisibilityGridObject(863567f, -6524565f);                  
+            var grid = new VisibilityGrid<Cell>(1f);
+            var gridObject = new DummyVisibilityGridObject(863567f, -6524565f);
             grid.RegisterObject(gridObject);
 
             Assert.NotNull(gridObject.Cell);
-            var position = VisibilityGrid.GetGridPosition(gridObject.Cell.Id);
+            var position = VisibilityGridHelper.GetGridPosition(gridObject.Cell.Id);
             Assert.AreEqual(gridObject.Position.x, position.x);
             Assert.AreEqual(gridObject.Position.y, position.y);
             Assert.Contains(gridObject, gridObject.Cell.Objects);
@@ -66,8 +71,8 @@ namespace Tests
         [Test]
         public void CanRemoveRegisteredGridObject()
         {
-            var grid = new VisibilityGrid(1);
-            var gridObject = new DummyVisibilityGridObject(147654f, -65456f);            
+            var grid = new VisibilityGrid<Cell>(1);
+            var gridObject = new DummyVisibilityGridObject(147654f, -65456f);
             grid.RegisterObject(gridObject);
             var cell = gridObject.Cell;
             grid.UnregisterObject(gridObject);
@@ -91,7 +96,7 @@ namespace Tests
                 new DummyVisibilityGridObject(-1,1),
             };
 
-            var grid = new VisibilityGrid(1);
+            var grid = new VisibilityGrid<TestCell>(1);
 
             foreach (var item in objects)
             {
@@ -100,15 +105,15 @@ namespace Tests
 
             foreach (var item in objects)
                 Assert.AreEqual(item.Cell.Objects.Count, 1);
-
-            Assert.AreSame(objects[0].Cell.Neighbors.Top, objects[1].Cell);
-            Assert.AreSame(objects[1].Cell.Neighbors.Bottom, objects[0].Cell);
-            Assert.AreSame(objects[0].Cell.Neighbors.TopRight, objects[2].Cell);
-            Assert.AreSame(objects[2].Cell.Neighbors.BottomLeft, objects[0].Cell);
-            Assert.AreSame(objects[0].Cell.Neighbors.Right, objects[3].Cell);
-            Assert.AreSame(objects[3].Cell.Neighbors.Left, objects[0].Cell);
-            Assert.AreSame(objects[0].Cell.Neighbors.BottomRight, objects[4].Cell);
-            Assert.AreSame(objects[4].Cell.Neighbors.TopLeft, objects[0].Cell);
+            
+            Assert.AreSame((objects[0].Cell as TestCell).Neighbors.Top, objects[1].Cell);
+            Assert.AreSame((objects[1].Cell as TestCell).Neighbors.Bottom, objects[0].Cell);
+            Assert.AreSame((objects[0].Cell as TestCell).Neighbors.TopRight, objects[2].Cell);
+            Assert.AreSame((objects[2].Cell as TestCell).Neighbors.BottomLeft, objects[0].Cell);
+            Assert.AreSame((objects[0].Cell as TestCell).Neighbors.Right, objects[3].Cell);
+            Assert.AreSame((objects[3].Cell as TestCell).Neighbors.Left, objects[0].Cell);
+            Assert.AreSame((objects[0].Cell as TestCell).Neighbors.BottomRight, objects[4].Cell);
+            Assert.AreSame((objects[4].Cell as TestCell).Neighbors.TopLeft, objects[0].Cell);
         }
 
         [Test]
@@ -127,7 +132,7 @@ namespace Tests
                 new DummyVisibilityGridObject(-1,1),
             };
 
-            var grid = new VisibilityGrid(1);
+            var grid = new VisibilityGrid<TestCell>(1);
 
             foreach (var item in objects)
             {
@@ -139,10 +144,10 @@ namespace Tests
 
             grid.UnregisterObject(objects[0]);
             
-            Assert.IsNull(objects[1].Cell.Neighbors.Bottom);            
-            Assert.IsNull(objects[2].Cell.Neighbors.BottomLeft);            
-            Assert.IsNull(objects[3].Cell.Neighbors.Left);            
-            Assert.IsNull(objects[4].Cell.Neighbors.TopLeft);
+            Assert.IsNull((objects[1].Cell as TestCell).Neighbors.Bottom);
+            Assert.IsNull((objects[2].Cell as TestCell).Neighbors.BottomLeft);
+            Assert.IsNull((objects[3].Cell as TestCell).Neighbors.Left);
+            Assert.IsNull((objects[4].Cell as TestCell).Neighbors.TopLeft);
         }
     }
 }
