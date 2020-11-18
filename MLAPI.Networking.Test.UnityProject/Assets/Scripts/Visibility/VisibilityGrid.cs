@@ -41,7 +41,7 @@ namespace Twindrums.TheWagaduChronicles.Visibility
                 var gridObject = objects[i];
 
                 if (!gridObject.ShouldUpdate)
-                    return;
+                    continue;
 
                 ulong cellId = GetCellId(gridObject.Position.x, gridObject.Position.y);
                 if (gridObject.Cell.Id == cellId)
