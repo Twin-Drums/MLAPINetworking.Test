@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: -6008156162258442206}
   - component: {fileID: 424642324254162445}
   - component: {fileID: 7789158277006611240}
+  - component: {fileID: 8444889654341046361}
+  - component: {fileID: 4256345068591509009}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -196,7 +198,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5106127699042387018}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ba8dbc3baadfd4d81a05b5ea5e4a1e22, type: 3}
   m_Name: 
@@ -211,7 +213,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5106127699042387018}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073ce474ee9854b04b8c3d676feae84d, type: 3}
   m_Name: 
@@ -228,6 +230,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc3340109cbf84116b79716c14ad6605, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
 --- !u!114 &7789158277006611240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,3 +246,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsPlayer: 1
+--- !u!114 &8444889654341046361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5106127699042387018}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9245b38b2b884a028f68ae5ac0c8e82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4256345068591509009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5106127699042387018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc3340109cbf84116b79716c14ad6605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 500, y: 0, z: 500}
