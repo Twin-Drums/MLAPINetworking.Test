@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using MLAPI;
+using System;
+using System.Text.RegularExpressions;
 
 namespace Twindrums.TheWagaduChronicles.NetworkNPC
 {
@@ -10,8 +12,19 @@ namespace Twindrums.TheWagaduChronicles.NetworkNPC
         [SerializeField] private int amount = 100;
         [SerializeField] private Bounds bounds;
 
+        private Regex amountNPCsRegex = new Regex(@"AmountNPCs=(\d+)");
+
         public override void NetworkStart()
         {
+            var args = System.Environment.GetCommandLineArgs();
+            foreach (var item in args)
+            {                
+                if(amountNPCsRegex.IsMatch(item))
+                {                    
+                    amount = int.Parse(amountNPCsRegex.Match(item).Groups[1].Value);
+                }
+            }
+
             Debug.Log("[ServerNPCSpawner::NetworkStart]");
             if(IsServer)
             {
